@@ -80,7 +80,7 @@ function Body(_mass, _pos, _vel){
 		// update path
 		this.path.push(createVector(this.pos.x, this.pos.y));
 		// keep tracing path short
-		if (this.path.length > 100){
+		if (this.path.length > 50){
 			// remove first part of path
 			this.path.shift(0, 1);
 		}
