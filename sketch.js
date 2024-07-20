@@ -9,7 +9,7 @@ function setup() {
 	createCanvas(windowWidth, windowHeight);
 	
 	// create sun
-	sun = new Body(100, createVector(0, 0), createVector(0, 0));
+	sun = new Body(100, createVector(0, 0), createVector(0, 0), color(255, 221, 33));
 
 	// create planets
 	for (let i = 0; i < numPlanets; i++){
@@ -20,6 +20,9 @@ function setup() {
 		let theta = random(TWO_PI);
 		// calculate position of planet
 		let planetPos = createVector(r * cos(theta), r * sin(theta));
+
+		// planet color
+		let planetColor = color(random(0, 255), random(0, 255), random(0, 255));
 
 		// planet velocity
 		let planetVel = planetPos.copy();
@@ -33,7 +36,7 @@ function setup() {
 		}
 		// make orbit ellipitcal instead of circular by changing velocity 
 		planetVel.mult(random(1 - destabilise, 1 + destabilise));
-		planets.push( new Body(random(5, 30), planetPos, planetVel) );
+		planets.push( new Body(random(5, 30), planetPos, planetVel, planetColor) );
 	}
 }
 
@@ -54,20 +57,22 @@ function draw() {
 }
 
 // class for celestial bodies
-function Body(_mass, _pos, _vel){
+function Body(_mass, _pos, _vel, _color){
 	// set variables for function
 	this.mass = _mass;
 	this.pos = _pos; 
 	this.vel = _vel;
+	this.color = _color;
 	this.r = this.mass;
 	this.path = [];	
 	
 	// draw on screen
 	this.show = function(){
-		noStroke(); fill(255);
+		noStroke(); fill(this.color);
 		ellipse(this.pos.x, this.pos.y, this.r, this.r); 
 		stroke(30);
 		for (let i = 0; i < this.path.length - 2; i++){
+			stroke(this.color);
 			line(this.path[i].x, this.path[i].y, this.path[i+1].x, this.path[i+1].y,)
 		}
 	} 
