@@ -1,6 +1,6 @@
 let sun;
 let planets = [];
-let G = 100;
+let G = 50;
 let numPlanets = 5; 
 let destabilise = 0.2;
 
