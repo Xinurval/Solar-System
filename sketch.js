@@ -38,6 +38,12 @@ function setup() {
 		planetVel.mult(random(1 - destabilise, 1 + destabilise));
 		planets.push( new Body(random(5, 30), planetPos, planetVel, planetColor) );
 	}
+
+	// setup text
+	font = loadFont('/Montserrat-ExtraBold.ttf');
+	textFont(font);
+	textSize(windowWidth / 50);
+	textAlign(CENTER, CENTER);
 }
 
 function draw() {	
@@ -46,17 +52,26 @@ function draw() {
 	translate(width/2, height/2);
 	background(180);
 	
+	// display text
+	text("Solar System Simulation", 20, - (windowHeight / 2) + (windowHeight / 14));
+
 	// draw planets
 	for (let i = 0; i < planets.length; i++){
 		sun.attract(planets[i]);
 		planets[i].update();
 		planets[i].show();
 	}
-
 	sun.show();
 }
 
-// class for celestial bodies
+// resize window
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+	textSize(windowWidth / 50);
+}
+
+
+// class for celestial bodies		
 function Body(_mass, _pos, _vel, _color){
 	// set variables for function
 	this.mass = _mass;
