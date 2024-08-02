@@ -1,12 +1,11 @@
 let sun;
 let planets = [];
 let G = 50;
-let numPlanets = 5; 
+let numPlanets = 1; 
 let destabilise = 0.2;
 
 let newPlanetButton;
 let deletePlanetButton;
-
 
 // setup code here
 function setup() {
@@ -20,31 +19,31 @@ function setup() {
 		planets.push( generatePlanet() )
 	}
 
-	// setup title text
-	font = loadFont('/Montserrat-ExtraBold.ttf');
-	textFont(font);
-	textSize(windowWidth / 50);
+	// load texts
+	titleFont = loadFont('/Montserrat-ExtraBold.ttf');
+	headingFont = loadFont('/Montserrat-SemiBold.ttf');
 	textAlign(CENTER, CENTER);
 
 	// button to generate new planet
 	newPlanetButton = createButton("NEW");
   newPlanetButton.mouseClicked(() => planets.push(generatePlanet()));
-  newPlanetButton.position(windowWidth - 132, 15);
+  newPlanetButton.position(windowWidth - windowWidth / 12.12, 55);
 	newPlanetButton.size(107, 62);
-  newPlanetButton.style("font-family", font); 
+  newPlanetButton.style("font-family", titleFont); 
 	newPlanetButton.style("font-size", "32px");
 	newPlanetButton.style("background-color", color(255, 255, 255));
 	newPlanetButton.style("border-radius", "5px");
 
 	// button to delete planet
 	deletePlanetButton = createButton("DELETE");
-	// button.mouseClicked(generatePlanet);
-	deletePlanetButton.position(windowWidth - 132, 80);
+	// button.mouseClicked(Planet);
+	deletePlanetButton.position(windowWidth - windowWidth / 12.12, 120);
 	deletePlanetButton.size(107, 62);
-	deletePlanetButton.style("font-family", font); 
+	deletePlanetButton.style("font-family", titleFont); 
 	deletePlanetButton.style("font-size", "28px");
 	deletePlanetButton.style("background-color", color(255, 255, 255));
 	deletePlanetButton.style("border-radius", "5px");
+
 }
 
 function draw() {	
@@ -52,12 +51,19 @@ function draw() {
 	// centre items
 	translate(width/2, height/2);
 	background(180);
-	
-	// display text
-	text("Solar System Simulation", 20, - (windowHeight / 2) + (windowHeight / 14));
 
-	// draw ui for modifying planets
-	rect(width / 2 - 220, -height / 2 + 10, 200, 300, 5)
+	// display title text
+	textFont(titleFont);
+	text("Solar System Simulation", 0, - (windowHeight / 2) + (windowHeight / 14));
+
+	// draw UI for modifying planets
+	rect(width / 2.75, -height / 2.05, width / 8, width / 5.33 , 5);
+	// display modify heading text
+	fill(0);
+	textSize(windowWidth / 53);
+	textFont(headingFont);
+	text("Modify", width / 2 - width / 13.6, -height / 2 + height / 30);
+	textSize(windowWidth / 50);
 
 	// draw planets
 	for (let i = 0; i < planets.length; i++){
@@ -72,6 +78,13 @@ function draw() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 	textSize(windowWidth / 50);
+	// update buttons
+	newPlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 14.01);
+	newPlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + 31);
+	newPlanetButton.style("font-size", `${windowHeight / 24.09}px`);
+	deletePlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 6.425);
+	deletePlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + 31);
+	deletePlanetButton.style("font-size", `${windowHeight / 27.535}px`);
 }
 
 // function to generate planets
