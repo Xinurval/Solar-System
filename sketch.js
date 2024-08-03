@@ -36,7 +36,7 @@ function setup() {
 
 	// button to delete planet
 	deletePlanetButton = createButton("DELETE");
-	// button.mouseClicked(Planet);
+	deletePlanetButton.mouseClicked(() => planets.splice(0, 1));
 	deletePlanetButton.position(windowWidth - windowWidth / 12.12, 120);
 	deletePlanetButton.size(107, 62);
 	deletePlanetButton.style("font-family", titleFont); 
@@ -80,10 +80,10 @@ function windowResized() {
 	textSize(windowWidth / 50);
 	// update buttons
 	newPlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 14.01);
-	newPlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + 31);
+	newPlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + windowHeight / 24.8);	
 	newPlanetButton.style("font-size", `${windowHeight / 24.09}px`);
 	deletePlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 6.425);
-	deletePlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + 31);
+	deletePlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + windowHeight / 24.8);
 	deletePlanetButton.style("font-size", `${windowHeight / 27.535}px`);
 }
 
