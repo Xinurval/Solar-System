@@ -38,20 +38,20 @@ function setup() {
 	// button to generate new planet
 	newPlanetButton = createButton("NEW");
   newPlanetButton.mouseClicked(() => planets.push(generatePlanet()));
-  newPlanetButton.position(windowWidth - windowWidth / 12.12, 55);
-	newPlanetButton.size(107, 62);
+	newPlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 14.01);
+	newPlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + windowHeight / 24.8);	
   newPlanetButton.style("font-family", titleFont); 
-	newPlanetButton.style("font-size", "32px");
+	newPlanetButton.style("font-size", `${windowHeight / 24.09}px`);
 	newPlanetButton.style("background-color", color(255, 255, 255));
 	newPlanetButton.style("border-radius", "5px");
 
 	// button to delete planet
 	deletePlanetButton = createButton("DELETE");
 	deletePlanetButton.mouseClicked(() => deletePlanet())
-	deletePlanetButton.position(windowWidth - windowWidth / 12.12, 120);
-	deletePlanetButton.size(107, 62);
+	deletePlanetButton.position(windowWidth - windowWidth / 12.12, windowHeight / 6.425);
+	deletePlanetButton.size(windowWidth / 14.95, windowHeight / 25.8 + windowHeight / 24.8);
 	deletePlanetButton.style("font-family", titleFont); 
-	deletePlanetButton.style("font-size", "28px");
+	deletePlanetButton.style("font-size", `${windowHeight / 27.535}px`);
 	deletePlanetButton.style("background-color", color(255, 255, 255));
 	deletePlanetButton.style("border-radius", "5px");
 
