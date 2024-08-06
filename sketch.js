@@ -1,3 +1,6 @@
+import { db } from "./src/backend/db.js";
+import { collection, addDoc, getDocs, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
 let sun;
 let planets = [];
 let G = 50;
@@ -6,13 +9,23 @@ let destabilise = 0.2;
 
 let newPlanetButton;
 let deletePlanetButton;
+let titleFont;
+let headingFont;
+
+let planetsLoaded = false; // Flag to track if planets are loaded
 
 // setup code here
 function setup() {
-	createCanvas(windowWidth, windowHeight);
 	
+	createCanvas(windowWidth, windowHeight);
+	console.log('setup() is called');
+	console.log("Firebase DB:", db); // Add logging to check if db is loaded
+
 	// create sun
 	sun = new Body(100, createVector(0, 0), createVector(0, 0), color(255, 221, 33));
+
+	// load planets from firestore
+  loadPlanetsFromFirestore();
 
 	// create planets
 	for (let i = 0; i < numPlanets; i++){
@@ -36,7 +49,7 @@ function setup() {
 
 	// button to delete planet
 	deletePlanetButton = createButton("DELETE");
-	deletePlanetButton.mouseClicked(() => planets.splice(0, 1));
+	deletePlanetButton.mouseClicked(() => deletePlanet())
 	deletePlanetButton.position(windowWidth - windowWidth / 12.12, 120);
 	deletePlanetButton.size(107, 62);
 	deletePlanetButton.style("font-family", titleFont); 
@@ -47,6 +60,7 @@ function setup() {
 }
 
 function draw() {	
+	console.log('draw() is called');
 	// put drawing code here
 	// centre items
 	translate(width/2, height/2);
@@ -66,13 +80,15 @@ function draw() {
 	textSize(windowWidth / 50);
 
 	// draw planets
-	for (let i = 0; i < planets.length; i++){
-		sun.attract(planets[i]);
-		planets[i].update();
-		planets[i].show();
+	if (planetsLoaded) {
+		for (let i = 0; i < planets.length; i++){
+			sun.attract(planets[i]);
+			planets[i].update();
+			planets[i].show();
+		}
+		sun.show();
+		}
 	}
-	sun.show();
-}
 
 // resize window
 function windowResized() {
@@ -112,8 +128,75 @@ function generatePlanet(){
 	}
 	// make orbit ellipitcal instead of circular by changing velocity 
 	planetVel.mult(random(1 - destabilise, 1 + destabilise));
-	return new Body(random(5, 30), planetPos, planetVel, planetColor)
+
+	// planet mass
+	let planetMass = random(5, 30)
+
+	// store planet data in Firestore
+	storePlanetData(planetPos, planetVel, planetColor, planetMass);
+
+	return new Body(planetMass, planetPos, planetVel, planetColor)
+	
 }
+
+async function storePlanetData(planetPos, planetVel, planetColor, planetMass) {
+  try {
+    const planetRef = await addDoc(collection(db, "planets"), {
+      x: planetPos.x,
+      y: planetPos.y,
+      vx: planetVel.x,
+      vy: planetVel.y,
+      r: planetColor.levels[0], // Red component
+      g: planetColor.levels[1], // Green component
+      b: planetColor.levels[2], // Blue component
+      mass: planetMass
+    });
+    console.log("Planet data stored with ID:", planetRef.id);
+  } catch (error) {
+    console.error("Error storing planet data:", error);
+  }
+}
+
+
+async function loadPlanetsFromFirestore() {
+  try {
+    const planetsSnapshot = await getDocs(collection(db, "planets"));
+
+    planetsSnapshot.forEach(doc => {
+      const planetData = doc.data();
+      const planetPos = createVector(planetData.x, planetData.y);
+      const planetVel = createVector(planetData.vx, planetData.vy);
+      const planetColor = color(planetData.r, planetData.g, planetData.b);
+      const planetMass = planetData.mass;
+      planets.push(new Body(planetMass, planetPos, planetVel, planetColor));
+    });
+    planetsLoaded = true; // Set flag to true when planets are loaded
+
+  } catch (error) {
+    console.error("Error loading planets from Firestore:", error);
+  }
+}
+
+async function deletePlanet() {
+  try {
+    // Get the first planet's document ID from Firestore
+    const planetsSnapshot = await getDocs(collection(db, "planets"));
+    const firstPlanetDocId = planetsSnapshot.docs[0].id;
+
+    // Delete the document from Firestore
+    await deleteDoc(doc(db, "planets", firstPlanetDocId));
+    console.log("Planet deleted from Firestore");
+
+    // Remove the planet from the array
+    planets.splice(0, 1);
+    console.log("Planet removed from array");
+
+  } catch (error) {
+    console.error("Error deleting planet:", error);
+  }
+}
+
+
 
 // class for celestial bodies		
 function Body(_mass, _pos, _vel, _color){
@@ -167,3 +250,7 @@ function Body(_mass, _pos, _vel, _color){
 		child.applyForce(f);
 	}
 }
+
+window.setup = setup;
+window.draw = draw;
+window.windowResized = windowResized;
