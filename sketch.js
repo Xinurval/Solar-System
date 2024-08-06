@@ -1,36 +1,36 @@
 import { db } from "./src/backend/db.js";
 import { collection, addDoc, getDocs, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
+// set up solar system variables
 let sun;
 let planets = [];
 let G = 50;
 let numPlanets = 0; 
 let destabilise = 0.2;
+let planetsLoaded = false; 
 
+// set up UI variables
 let newPlanetButton;
 let deletePlanetButton;
 let titleFont;
 let headingFont;
 
-let planetsLoaded = false; // Flag to track if planets are loaded
-
-// setup code here
+// setup code
 function setup() {
-	
 	createCanvas(windowWidth, windowHeight);
 
 	// create sun
 	sun = new Body(100, createVector(0, 0), createVector(0, 0), color(255, 221, 33));
 
-	// load planets from firestore
+	// load pre-existing planets from firestore
   loadPlanetsFromFirestore();
-	console.log(planets)
-	// create planets
-	for (let i = planets.length; i < numPlanets; i++){
-		planets.push( generatePlanet() )
-	}
 
-	// load texts
+	// // auto create planets depending on number specified above
+	// for (let i = planets.length; i < numPlanets; i++){
+	// 	planets.push( generatePlanet() )
+	// }
+
+	// load fonts
 	titleFont = loadFont('/Montserrat-ExtraBold.ttf');
 	headingFont = loadFont('/Montserrat-SemiBold.ttf');
 	textAlign(CENTER, CENTER);
@@ -54,30 +54,29 @@ function setup() {
 	deletePlanetButton.style("font-size", `${windowHeight / 27.535}px`);
 	deletePlanetButton.style("background-color", color(255, 255, 255));
 	deletePlanetButton.style("border-radius", "5px");
-
 }
 
+// drawing code
 function draw() {	
-	console.log('draw() is called');
-	// put drawing code here
 	// centre items
 	translate(width/2, height/2);
+
 	background(180);
 
 	// display title text
 	textFont(titleFont);
 	text("Solar System Simulation", 0, - (windowHeight / 2) + (windowHeight / 14));
 
-	// draw UI for modifying planets
+	// UI for modifying planets
 	rect(width / 2.75, -height / 2.05, width / 8, width / 5.33 , 5);
-	// display modify heading text
+	// modify text
 	fill(0);
 	textSize(windowWidth / 53);
 	textFont(headingFont);
 	text("Modify", width / 2 - width / 13.6, -height / 2 + height / 30);
 	textSize(windowWidth / 50);
 
-	// draw planets
+	// draw planets if loaded from firestore
 	if (planetsLoaded) {
 		for (let i = 0; i < planets.length; i++){
 			sun.attract(planets[i]);
@@ -88,7 +87,7 @@ function draw() {
 		}
 	}
 
-// resize window
+// resize window and UI 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 	textSize(windowWidth / 50);
@@ -137,8 +136,9 @@ function generatePlanet(){
 	
 }
 
+// function to store planet data in firestore
 async function storePlanetData(planetPos, planetVel, planetColor, planetMass) {
-  try {
+	try {
     const planetRef = await addDoc(collection(db, "planets"), {
       x: planetPos.x,
       y: planetPos.y,
@@ -150,16 +150,20 @@ async function storePlanetData(planetPos, planetVel, planetColor, planetMass) {
       mass: planetMass
     });
     console.log("Planet data stored with ID:", planetRef.id);
-  } catch (error) {
+  } 
+	// handle errors
+	catch (error) {
     console.error("Error storing planet data:", error);
   }
 }
 
-
+// function to load planets from firestore
 async function loadPlanetsFromFirestore() {
   try {
+		// retrieve all planets data from the collection
     const planetsSnapshot = await getDocs(collection(db, "planets"));
 
+		// load all planets individually
     planetsSnapshot.forEach(doc => {
       const planetData = doc.data();
       const planetPos = createVector(planetData.x, planetData.y);
@@ -168,24 +172,24 @@ async function loadPlanetsFromFirestore() {
       const planetMass = planetData.mass;
       planets.push(new Body(planetMass, planetPos, planetVel, planetColor));
     });
-    planetsLoaded = true; // Set flag to true when planets are loaded
-
+    planetsLoaded = true; 
   } catch (error) {
     console.error("Error loading planets from Firestore:", error);
   }
 }
 
+// function to delete planet
 async function deletePlanet() {
   try {
-    // Get the first planet's document ID from Firestore
+    // get the first planet's document ID from Firestore
     const planetsSnapshot = await getDocs(collection(db, "planets"));
     const firstPlanetDocId = planetsSnapshot.docs[0].id;
 
-    // Delete the document from Firestore
+    // delete the document from Firestore
     await deleteDoc(doc(db, "planets", firstPlanetDocId));
     console.log("Planet deleted from Firestore");
 
-    // Remove the planet from the array
+    // remove the planet from the array
     planets.splice(0, 1);
     console.log("Planet removed from array");
 
@@ -193,7 +197,6 @@ async function deletePlanet() {
     console.error("Error deleting planet:", error);
   }
 }
-
 
 
 // class for celestial bodies		
@@ -211,6 +214,7 @@ function Body(_mass, _pos, _vel, _color){
 		noStroke(); fill(this.color);
 		ellipse(this.pos.x, this.pos.y, this.r, this.r); 
 		stroke(30);
+		// draw planet's path 
 		for (let i = 0; i < this.path.length - 2; i++){
 			stroke(this.color);
 			line(this.path[i].x, this.path[i].y, this.path[i+1].x, this.path[i+1].y,)
