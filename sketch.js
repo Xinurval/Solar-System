@@ -4,7 +4,7 @@ import { collection, addDoc, getDocs, doc, deleteDoc } from 'https://www.gstatic
 let sun;
 let planets = [];
 let G = 50;
-let numPlanets = 1; 
+let numPlanets = 0; 
 let destabilise = 0.2;
 
 let newPlanetButton;
@@ -18,17 +18,15 @@ let planetsLoaded = false; // Flag to track if planets are loaded
 function setup() {
 	
 	createCanvas(windowWidth, windowHeight);
-	console.log('setup() is called');
-	console.log("Firebase DB:", db); // Add logging to check if db is loaded
 
 	// create sun
 	sun = new Body(100, createVector(0, 0), createVector(0, 0), color(255, 221, 33));
 
 	// load planets from firestore
   loadPlanetsFromFirestore();
-
+	console.log(planets)
 	// create planets
-	for (let i = 0; i < numPlanets; i++){
+	for (let i = planets.length; i < numPlanets; i++){
 		planets.push( generatePlanet() )
 	}
 
