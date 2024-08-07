@@ -1,0 +1,1 @@
+A solar system simulation with real physics. There is a central sun which planets orbit elliptically. You can add and remove planets and track their orbits. Planets and their data are stored to Firestore database where they are retrieved from, so that every device has the same planets. 
